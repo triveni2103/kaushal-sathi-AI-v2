@@ -619,7 +619,7 @@ body {
   cursor: pointer;
   background: white;
   color: var(--text-muted);
-  transition: all 0.15s;
+  transition: all 60s;
   font-family: inherit;
 }
 
@@ -641,7 +641,7 @@ body {
 .progress-bar {
   height: 100%;
   background: linear-gradient(to right, var(--mint-mid), var(--mint-dark));
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .progress-label {
