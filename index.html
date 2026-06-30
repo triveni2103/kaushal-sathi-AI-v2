@@ -46,11 +46,29 @@
 </div>
 
 <div class="screen" id="s-home">
-  <div class="status"><div style="display:flex;align-items:center;gap:8px;"><button class="hamburger-btn" onclick="openSidebar()"><i class="ti ti-menu-2"></i></button><span>Kaushal Saathi</span></div><div class="xp-display-top"><i class="ti ti-star-filled"></i> <span id="xp-count">140</span> XP</div></div>
+  <div class="status">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="hamburger-btn" onclick="openSidebar()"><i class="ti ti-menu-2"></i></button>
+      <span>Kaushal Saathi — AI Lesson Plans</span>
+    </div>
+    <div class="xp-display-top"><i class="ti ti-star-filled"></i> <span id="xp-count">140</span> XP</div>
+  </div>
   <div class="scrollable">
+    <div class="th-hero" style="margin: 16px; background: linear-gradient(135deg, var(--lavender-dark), var(--lavender-mid)); text-align: center; color: white; border-radius: 20px; padding: 24px;">
+      <div class="splash-logo" style="margin: 0 auto 12px; width: 60px; height: 60px; background: white; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 32px;">📚</div>
+      <h2 class="splash-h" style="color: white; font-size: 24px; margin-bottom: 4px;">Kaushal Saathi Lesson Planner</h2>
+      <p class="splash-sub" style="color: rgba(255,255,255,0.9); font-size: 13px; margin-bottom: 12px;">NCERT Kaushal Bodh · NEP 2020 Aligned</p>
+      <div class="splash-pill" style="display: inline-block; margin-bottom: 16px;">G6–8 · All Vocational Themes</div>
+      <div class="splash-features-row" style="display: flex; justify-content: center; gap: 12px; margin-bottom: 16px;">
+        <div class="splash-feat" style="color: var(--text);"><i class="ti ti-brain"></i><span>AI Powered</span></div>
+        <div class="splash-feat" style="color: var(--text)"><i class="ti ti-microphone"></i><span>Voice Input</span></div>
+        <div class="splash-feat" style="color: var(--text)"><i class="ti ti-device-gamepad-2"></i><span>Gamified</span></div>
+      </div>
+    </div>
+
     <div class="home-header">
-      <div class="greet">Namaste, Shikshak ji 🙏</div>
-      <div class="home-h">Choose Your Topic</div>
+      <div class="greet">Choose Your Topic</div>
+      <div class="home-h">Vocational Themes</div>
       <div class="home-sub">Tap a vocational theme to see projects &amp; lesson plans</div>
     </div>
     <div class="sec-label">3 Vocational Themes</div>
@@ -108,12 +126,12 @@
       <div class="score-row"><span class="score-label">Work in Human Services</span><span class="score-val">48 periods</span></div>
       <div class="score-row" style="background:var(--mint);margin:-1px -1px -1px;border-radius:0 0 8px 8px;padding:8px 0;"><span class="score-label" style="color:var(--mint-dark);font-weight:500;padding-left:4px;">Total</span><span class="score-val" style="color:var(--mint-dark);">144 periods</span></div>
     </div>
-    <div style="height:8px;"></div>
+    <div style="height:80px;"></div>
   </div>
   <div class="bottom-nav">
-    <button class="nav-item active" onclick="go('s-home')"><i class="ti ti-home"></i>Home</button>
-    <button class="nav-item" onclick="go('s-home')"><i class="ti ti-book-2"></i>Topics</button>
-    <button class="nav-item" onclick="go('s-home')"><i class="ti ti-clipboard-list"></i>Scorecard</button>
+    <button class="nav-item" onclick="go('s-teacher-home')"><i class="ti ti-home"></i>Home</button>
+    <button class="nav-item active" onclick="go('s-home')"><i class="ti ti-book-2"></i>Topics</button>
+    <button class="nav-item" onclick="go('s-dashboard')"><i class="ti ti-clipboard-list"></i>Scorecard</button>
   </div>
 </div>
 
@@ -170,7 +188,14 @@
     <div class="progress-label" id="progress-label">Overview</div>
   </div>
 
-  <div class="scrollable lesson-scrollable" id="lesson-content"></div>
+  <div class="ks-step-navigation-container" style="display:none; flex-direction:column; flex:1; overflow:hidden;" id="lesson-step-nav-wrapper">
+  <div class="scrollable lesson-scrollable" id="lesson-content" style="padding:14px; flex: 1;"></div>
+  
+  <div class="ks-step-control-bar" style="display:flex; justify-content:space-between; align-items:center; padding:10px 16px; background:white; border-top:1px solid var(--border); box-shadow:0 -4px 10px rgba(0,0,0,0.05); gap:10px;">
+    <button class="adv-apply-btn" id="ks-step-prev-btn" onclick="navigateLessonStep(-1)" style="margin:0; flex:1; background:#64748b; color:white; border:none; padding:10px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">← Previous Section</button>
+    <button class="adv-apply-btn" id="ks-step-next-btn" onclick="navigateLessonStep(1)" style="margin:0; flex:1; background:var(--mint-dark); color:white; border:none; padding:10px; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;">Next Section →</button>
+  </div>
+</div>
 
   <div class="floating-cluster">
     <button class="float-btn float-voice" onclick="toggleVoiceInput()" id="voice-float-btn" title="Voice Input">
@@ -318,6 +343,11 @@
           <label class="adv-label"><i class="ti ti-map-pin" style="font-size:11px;"></i> City / District</label>
           <input class="adv-input" type="text" id="adv-city" placeholder="e.g. Pune">
         </div>
+        <!-- Zip Code / Pincode इनपुट - City/District च्या खाली जोडा -->
+<div class="adv-field" style="margin-top: 10px;">
+  <label class="adv-label"><i class="ti ti-hash" style="font-size:11px;"></i> Zip Code / Pincode (Optional)</label>
+  <input class="adv-input" type="text" id="adv-pincode" placeholder="e.g. 411001" maxlength="6" pattern="\d*" aria-label="Zip Code or Pincode" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+</div>
       </div>
 
       <div class="adv-section-title" style="padding-top:4px;">Available Resources</div>
@@ -379,50 +409,54 @@
 <div class="screen" id="s-teacher-home">
   <div class="status">
     <div style="display:flex;align-items:center;gap:8px;">
-      <span style="color:var(--mint-dark);">9:41</span>
+      <button class="hamburger-btn" onclick="openSidebar()"><i class="ti ti-menu-2"></i></button>
+      <span>Dashboard Home</span>
     </div>
-    <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
-      <i class="ti ti-signal-5g"></i>
-      <i class="ti ti-battery-3"></i>
-    </div>
+    <div class="xp-display-top"><i class="ti ti-star-filled"></i> <span class="ks-xp-count-val">140</span> XP</div>
   </div>
   <div class="scrollable th-scroll">
-    <div class="th-greeting-card">
-      <div class="th-greeting-row">
+    
+    <div class="dash-section-wrapper" style="margin-top: 14px; background: linear-gradient(135deg, var(--mint), #ffffff); padding: 16px; border-radius: 12px; margin-left: 16px; margin-right: 16px; box-shadow: var(--shadow-sm);">
+      <div class="th-greeting-row" style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div>
-          <div class="th-namaste">NAMASTE</div>
-          <div class="th-name">Priya Sharma</div>
-          <div class="th-school">BMS Pratapgarh</div>
+          <div class="th-namaste" id="welcome-regional-greeting" style="font-size: 11px; font-weight: 800; color: var(--mint-dark); letter-spacing: 1px;">NAMASTE</div>
+          <div class="th-name" id="welcome-teacher-name" style="font-family: 'Baloo 2', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); margin-top: 2px;">Priya Sharma</div>
+          <div class="th-school" id="welcome-location-text" style="font-size: 12px; color: var(--text-muted);">BMS Pratapgarh</div>
         </div>
-        <button class="th-signout" onclick="signOut()">Sign out</button>
+        <button class="th-signout" onclick="signOut()" style="background: var(--coral); color: var(--coral-dark); border: none; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">Sign out</button>
       </div>
+      <!-- localization-extra-info (landmark/food/festival row) hidden to match the approved Home page layout.
+           triggerRegistrationLocalization() is null-safe and simply skips this block now. -->
     </div>
 
-    <div class="th-hero" onclick="openTodayPlan()">
+    <div class="th-hero" onclick="openTodayPlan()" style="margin: 12px 16px; cursor: pointer;">
       <div class="th-hero-tag">QUICK START</div>
-      <div class="th-hero-h">Pick up where you left off</div>
-      <div class="th-hero-sub">कक्षा में पहले अपनी योजना देखिए </div>
-      <button class="th-hero-btn">Open today's plan → </button>
+      <div class="th-hero-h" id="continue-lesson-title">Pick up where you left off</div>
+      <div class="th-hero-sub">कक्षा में पहले अपनी योजना देखिए</div>
+      <button class="th-hero-btn">Open today's plan →</button>
     </div>
 
-    <div class="th-section-h">
+    <div class="th-section-h" style="margin: 24px 16px 12px;">
       <div class="th-section-title">All features</div>
       <div class="th-section-sub">सभी सुविधाएं</div>
     </div>
+    <div class="th-feature-grid" id="th-feature-grid" style="margin: 0 16px;"></div>
 
-    <div class="th-feature-grid" id="th-feature-grid"></div>
-
-    <div class="th-offline">
-      <div class="th-offline-ico">🛰️</div>
+    <div class="th-offline" style="margin: 18px 16px 0;">
+      <div class="th-offline-ico">📡</div>
       <div>
-        <div class="th-offline-h">Offline-first - works without internet </div>
-        <div class="th-offline-sub">Today's plan, projects and lesson plans auto-sync. </div>
+        <div class="th-offline-h">Offline-first - works without internet</div>
+        <div class="th-offline-sub">Today's plan, projects and lesson plans auto-sync.</div>
       </div>
     </div>
 
-    <div style="height:24px;"></div>
+    <div style="height:80px;"></div>
   </div>
-  <nav class="th-bottom-nav" id="th-bottom-nav"></nav>
+  <div class="bottom-nav">
+    <button class="nav-item active" onclick="go('s-teacher-home')"><i class="ti ti-home"></i>Home</button>
+    <button class="nav-item" onclick="go('s-home')"><i class="ti ti-book-2"></i>Topics</button>
+    <button class="nav-item" onclick="go('s-dashboard')"><i class="ti ti-clipboard-list"></i>Scorecard</button>
+  </div>
 </div>
 
 <div class="screen" id="s-dashboard">
@@ -710,6 +744,74 @@
   <nav class="th-bottom-nav"></nav>
 </div>
 
+</div>
+<!-- जुना लोडर बदलून हा नवीन गेमिंग आणि टाईमलाईन लोडर जोडा (</body> च्या आधी) -->
+<div class="voice-modal-overlay" id="engaging-loading-overlay" style="z-index:99999; background:rgba(15,23,42,0.97); display:none; flex-direction:column; align-items:center; justify-content:center; padding:24px; position:fixed; top:0; left:0; width:100%; height:100%; overflow-y:auto;" role="dialog" aria-modal="true" aria-labelledby="loading-main-heading">
+  
+  <!-- पार्टिकल बॅकग्राउंड -->
+  <div id="ks-loading-particle-container" style="position:absolute; inset:0; pointer-events:none; overflow:hidden; opacity:0.35;"></div>
+  
+  <div class="ks-loading-card-container" style="background:#ffffff; width:100%; max-width:380px; border-radius:24px; padding:24px; box-shadow:var(--shadow-lg); position:relative; z-index:2; text-align:center; display:flex; flex-direction:column; gap:16px;">
+    
+    <!-- AI Brain आणि फ्लाइंग ॲनिमेशन बॉक्स -->
+    <div class="ks-ai-brain-illustration-box" style="position:relative; width:80px; height:80px; margin:0 auto; display:flex; align-items:center; justify-content:center;">
+      <div class="ks-brain-pulsing-core">🧠</div>
+      <div class="ks-flying-item f-book">📚</div>
+      <div class="ks-flying-item f-pencil">✏️</div>
+      <div class="ks-flying-item f-sparkle">✨</div>
+    </div>
+
+    <div>
+      <h3 id="loading-main-heading" style="font-family:'Baloo 2',sans-serif; color:var(--text); font-size:20px; font-weight:800; margin:0;">Kaushal Saathi Engine</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin:2px 0 0;" id="ks-loading-countdown-node">Almost Ready... 10 seconds remaining</p>
+    </div>
+
+    <!-- AI प्रोग्रेस टाईमलाईन -->
+    <div class="ks-ai-timeline-box" style="text-align:left; background:var(--bg2); padding:12px 16px; border-radius:16px; display:flex; flex-direction:column; gap:6px;">
+      <div class="ks-timeline-line-item state-pending" id="tl-node-0"><span>●</span> Reading NCERT</div>
+      <div class="ks-timeline-line-item state-todo" id="tl-node-1"><span>○</span> Understanding Learning Outcomes</div>
+      <div class="ks-timeline-line-item state-todo" id="tl-node-2"><span>○</span> Creating Teacher Script</div>
+      <div class="ks-timeline-line-item state-todo" id="tl-node-3"><span>○</span> Finding Activities</div>
+      <div class="ks-timeline-line-item state-todo" id="tl-node-4"><span>○</span> Generating Assessment</div>
+      <div class="ks-timeline-line-item state-todo" id="tl-node-5"><span>○</span> Preparing PPT</div>
+      <div class="ks-timeline-line-item state-todo" id="tl-node-6"><span>○</span> Finalizing Lesson</div>
+    </div>
+
+    <!-- रोटेटिंग माहिती कार्ड्स -->
+    <div class="ks-rotating-info-card-deck" style="background:var(--mint); border:1px solid var(--mint-mid); padding:10px 12px; border-radius:14px; min-height:64px; display:flex; align-items:center; justify-content:center;">
+      <div id="ks-rotating-card-body" style="font-size:12px; color:var(--mint-dark); font-weight:700; line-height:1.4;">🧠 AI is understanding your topic...</div>
+    </div>
+
+    <!-- मिनी गेम्स प्लेग्राउंड -->
+    <div class="ks-minigame-wrapper-box" style="border-top:1px dashed var(--border); padding-top:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span style="font-size:11px; font-weight:800; color:var(--text-muted);">Classroom Quick Play</span>
+        <span class="chip chip-yellow" id="ks-game-reward-badge" style="font-size:10px; padding:2px 8px; display:flex; align-items:center; gap:2px;"><i class="ti ti-star-filled"></i> <span id="ks-game-xp-val">+2 XP</span></span>
+      </div>
+      <div id="ks-minigame-playground-node" style="min-height:90px; background:var(--bg2); border-radius:14px; padding:10px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:6px;"></div>
+    </div>
+
+    <!-- AI टिप रोटेटर -->
+    <div class="ks-tips-carousel-banner" style="background:var(--lavender); border-radius:12px; padding:8px 12px; display:flex; align-items:center; gap:8px; text-align:left;">
+      <span style="font-size:16px; flex-shrink:0;">💡</span>
+      <div id="ks-tips-carousel-text" style="font-size:11px; color:var(--lavender-dark); font-weight:700; line-height:1.35;">Tip: Use local vegetables for examples.</div>
+    </div>
+
+    <!-- प्रोग्रेस टक्केवारी आणि प्रोग्रेस बार -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:800; color:var(--text-muted);">
+        <span>Generating Lesson</span>
+        <span id="ks-loading-percentage-node">0%</span>
+      </div>
+      <div style="width:100%; height:8px; background:#e5e7eb; border-radius:999px; overflow:hidden;">
+        <div style="width:0%; height:100%; background:linear-gradient(90deg, var(--mint-mid), var(--mint-dark)); border-radius:999px; transition:width 0.2s ease;" id="ks-loading-percentage-bar"></div>
+      </div>
+      <div id="ks-loading-ascii-bar" style="font-family:monospace; font-size:10px; color:var(--text-muted); text-align:left;">░░░░░░░░ ░ 0%</div>
+    </div>
+
+    <!-- मोटिव्हेशनल कोट्स -->
+    <div id="ks-loading-motivational-quote" style="font-size:11px; font-style:italic; color:var(--text-muted); font-weight:600; line-height:1.3;">"Every lesson shapes a future."</div>
+  </div>
 </div>
 <script src="scripts.js"></script>
 </body>
