@@ -6134,3 +6134,867 @@ function agcAddToPortfolio() { showToast('📁 Added to student portfolio!'); }
   styleEl.textContent = css;
   document.head.appendChild(styleEl);
 })();
+// ==========================================================================
+// scripts.js च्या शेवटी हा कोड जोडा
+// ==========================================================================
+
+// 1. REGIONAL LOCALIZATION DATABASE
+var LOCALIZATION_CONFIG_DB = {
+  "411001": { state: "Maharashtra", district: "Pune", city: "Pune", greeting: "Namaskar", food: "Puran Poli", landmark: "Gateway of India", festival: "Ganesh Chaturthi", quote: "बिना सहकार नहीं उद्धार - 'No development without cooperation.'", tip: "Use sugarcane fields counting for multiplication exercises.", crop: "Sugarcane", occupation: "Sugarcane Farmer / Agro-processor", monument: "Ajanta Caves", art: "Warli Art", sound: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" },
+  "380001": { state: "Gujarat", district: "Ahmedabad", city: "Ahmedabad", greeting: "Namaste", food: "Jalebi Fafda", landmark: "Statue of Unity", festival: "Navratri", quote: "નમસ્તે - 'Where character is built, nations are formed.'", tip: "Integrate groundnut oil volume weights with metric fluid conversion metrics.", crop: "Groundnut", occupation: "Textile Weaver / Diamond Polisher", monument: "Statue of Unity", art: "Patola Weaving", sound: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" },
+  "143001": { state: "Punjab", district: "Amritsar", city: "Amritsar", greeting: "Sat Sri Akal", food: "Makki di Roti", landmark: "Golden Temple", festival: "Baisakhi", quote: "ਸਤਿ ਸ਼्री ਅਕਾਲ - 'Truth is high, higher still is truthful living.'", tip: "Weave local tractor gear speeds ratios directly into physics velocity calculations.", crop: "Wheat / Mustard", occupation: "Grain Merchant / Farm Mechanization Tech", monument: "Golden Temple", art: "Phulkari Embroidery", sound: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" },
+  "560001": { state: "Karnataka", district: "Bangalore", city: "Bangalore", greeting: "Namaskara", food: "Ragi Mudde", landmark: "Mysore Palace", festival: "Ugadi", quote: "ನಮಸ್ಕಾರ - 'Knowledge is supreme asset.'", tip: "Connect Ragi crop metrics with dietary fiber percentage fractions.", crop: "Ragi", occupation: "Sericulturist / Coffee Planter", monument: "Mysore Palace", art: "Sandals Woodcarving", sound: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" }
+};
+
+var currentDetectedState = "Maharashtra"; 
+
+// 2. ENGAGING LOADING SCREEN ENGINE
+function showEngagingLoading(callback) {
+  var MESSAGES = [
+    "Preparing your classroom...",
+    "Finding engaging activities...",
+    "AI is creating something amazing...",
+    "Sharpening virtual pencils...",
+    "Arranging vocational toolkits...",
+    "Weaving regional examples...",
+    "Almost ready..."
+  ];
+  
+  var overlay = document.getElementById("engaging-loading-overlay");
+  var msgNode = document.getElementById("engaging-humorous-msg");
+  var progressNode = document.getElementById("loading-progress-bar-node");
+  
+  if (!overlay) { if (callback) callback(); return; }
+  overlay.style.display = "flex";
+  
+  var currentMsgIdx = 0;
+  msgNode.textContent = MESSAGES[currentMsgIdx];
+  
+  var msgInterval = setInterval(function() {
+    currentMsgIdx = (currentMsgIdx + 1) % MESSAGES.length;
+    msgNode.textContent = MESSAGES[currentMsgIdx];
+  }, 400);
+  
+  var progressPct = 0;
+  var progressInterval = setInterval(function() {
+    progressPct += 5;
+    if(progressNode) progressNode.style.width = progressPct + "%";
+    if (progressPct >= 100) {
+      clearInterval(msgInterval);
+      clearInterval(progressInterval);
+      overlay.style.display = "none";
+      if (callback) callback();
+    }
+  }, 35);
+}
+
+// 3. REGISTRATION LOCALIZATION ENGINE
+function triggerRegistrationLocalization() {
+  var pincodeNode = document.getElementById("reg-pincode-input");
+  if(!pincodeNode) return;
+  var pincode = pincodeNode.value.trim();
+  var config = LOCALIZATION_CONFIG_DB[pincode] || LOCALIZATION_CONFIG_DB["411001"];
+  
+  currentDetectedState = config.state;
+  
+  document.getElementById("welcome-regional-greeting").textContent = config.greeting.toUpperCase();
+  document.getElementById("welcome-teacher-name").textContent = config.greeting + " Triveni! 🙏";
+  document.getElementById("welcome-location-text").textContent = "Welcome from " + config.city + ", " + config.state + ".";
+  
+  document.getElementById("loc-landmark").textContent = config.landmark;
+  document.getElementById("loc-food").textContent = config.food;
+  document.getElementById("loc-festival").textContent = config.festival;
+  
+  document.getElementById("regional-quote-area").innerHTML = '<strong>Regional Quote:</strong> "' + config.quote + '"';
+  document.getElementById("teaching-tip-area").innerHTML = '💡 <strong>Teaching Tip:</strong> ' + config.tip;
+  document.getElementById("skill-events-placeholder").innerHTML = '📅 <strong>Nearby Skill Events:</strong> ' + config.city + ' Vocational Forum 2026';
+  
+  var soundToggle = document.getElementById("reg-welcome-sound-toggle");
+  if (soundToggle && soundToggle.checked && config.sound) {
+    var audio = new Audio(config.sound);
+    audio.volume = 0.3;
+    audio.play().catch(function(e) { console.log("Sound autoplay prevented."); });
+  }
+}// scripts.js च्या शेवटी जोडा - Pincode / Zip Code Validation & Auto-detection
+var PINCODE_GEO_REGISTRY = {
+  "411001": { city: "Pune", state: "Maharashtra" },
+  "380001": { city: "Ahmedabad", state: "Gujarat" },
+  "110001": { city: "New Delhi", state: "Delhi" },
+  "143001": { city: "Amritsar", state: "Punjab" },
+  "560001": { city: "Bangalore", state: "Karnataka" }
+};
+
+document.addEventListener("DOMContentLoaded", function() {
+  var pinInp = document.getElementById("adv-pincode");
+  if (pinInp) {
+    pinInp.addEventListener("input", function() {
+      // फक्त नंबर्स ठेवणे
+      this.value = this.value.replace(/[^0-9]/g, '');
+      var val = this.value.trim();
+      if (val.length === 6 && PINCODE_GEO_REGISTRY[val]) {
+        var record = PINCODE_GEO_REGISTRY[val];
+        if (document.getElementById("adv-city")) document.getElementById("adv-city").value = record.city;
+        if (document.getElementById("adv-state")) document.getElementById("adv-state").value = record.state;
+        showToast("📍 Locality detected: " + record.city + ", " + record.state);
+      }
+    });
+  }
+});
+
+// 4. STEP-BY-STEP NAVIGATION FOR LESSON CONTENT
+var currentLessonStepIndex = 0;
+var lessonStepsNodeMapping = [];
+
+function setupStepBasedLessonNavigation(htmlContent) {
+  var wrapper = document.getElementById("lesson-step-nav-wrapper");
+  var contentArea = document.getElementById("lesson-content");
+  if(!wrapper || !contentArea) return;
+  
+  contentArea.innerHTML = htmlContent;
+  wrapper.style.display = "flex";
+  
+  var flowSteps = [
+    { title: "Overview" }, { title: "Objectives" }, { title: "Materials" }, 
+    { title: "Teacher Script" }, { title: "Activities" }, { title: "Group Work" }, 
+    { title: "Discussion" }, { title: "Resources" }, { title: "Assessment" }
+  ];
+  
+  var rootBlock = contentArea.querySelector(".workspace-block");
+  if (!rootBlock) return;
+  
+  var children = Array.from(rootBlock.children);
+  rootBlock.innerHTML = "";
+  lessonStepsNodeMapping = [];
+  
+  for (var f = 0; f < flowSteps.length; f++) {
+    var stepContainer = document.createElement("div");
+    stepContainer.className = "ks-step-container-node";
+    stepContainer.setAttribute("data-step-title", flowSteps[f].title);
+    
+    if (flowSteps[f].title === "Assessment") {
+      var transitionScreen = document.createElement("div");
+      transitionScreen.className = "asm-transition-banner-wrapper";
+      transitionScreen.innerHTML = `
+        <span style="font-size:36px; display:block; margin-bottom:10px;">📋</span>
+        <h3 style="font-family:'Baloo 2', sans-serif; font-weight:800; font-size:18px; margin-bottom:4px;">Assessment Transition</h3>
+        <p style="font-size:12px; opacity:0.85; margin-bottom:14px;">Click Next to Start Assessment.</p>
+      `;
+      stepContainer.appendChild(transitionScreen);
+    }
+    rootBlock.appendChild(stepContainer);
+    lessonStepsNodeMapping.push(stepContainer);
+  }
+  
+  children.forEach(function(node) {
+    var txt = node.textContent.toLowerCase();
+    if (txt.includes("objective") || txt.includes("skill")) { lessonStepsNodeMapping[1].appendChild(node); } 
+    else if (txt.includes("materials required") || txt.includes("material")) { lessonStepsNodeMapping[2].appendChild(node); } 
+    else if (node.classList.contains("hook-card") || txt.includes("script") || txt.includes("guide")) { lessonStepsNodeMapping[3].appendChild(node); } 
+    else if (node.classList.contains("step-timeline-container") || txt.includes("step 1")) { lessonStepsNodeMapping[4].appendChild(node); } 
+    else if (node.classList.contains("group-banner") || txt.includes("group")) { lessonStepsNodeMapping[5].appendChild(node); } 
+    else if (txt.includes("discussion") || node.classList.contains("discussion-card")) { lessonStepsNodeMapping[6].appendChild(node); } 
+    else if (node.classList.contains("tips-category") || node.classList.contains("download-deck-grid")) { lessonStepsNodeMapping[7].appendChild(node); } 
+    else if (txt.includes("assessment") || node.classList.contains("assessment-container")) { lessonStepsNodeMapping[8].appendChild(node); } 
+    else { lessonStepsNodeMapping[0].appendChild(node); }
+  });
+  
+  currentLessonStepIndex = 0;
+  renderActiveStepPane();
+}
+
+function renderActiveStepPane() {
+  lessonStepsNodeMapping.forEach(function(pane, idx) {
+    if (idx === currentLessonStepIndex) {
+      pane.classList.add("active-step");
+      var bar = document.getElementById("lesson-progress");
+      if(bar) bar.style.width = Math.round(((idx + 1) / lessonStepsNodeMapping.length) * 100) + "%";
+      var lbl = document.getElementById("progress-label");
+      if(lbl) lbl.textContent = pane.getAttribute("data-step-title").toUpperCase();
+    } else {
+      pane.classList.remove("active-step");
+    }
+  });
+  var prevBtn = document.getElementById("ks-step-prev-btn");
+  if(prevBtn) prevBtn.style.opacity = (currentLessonStepIndex === 0) ? "0.3" : "1";
+}
+
+function navigateLessonStep(direction) {
+  var targetIdx = currentLessonStepIndex + direction;
+  if (targetIdx >= 0 && targetIdx < lessonStepsNodeMapping.length) {
+    currentLessonStepIndex = targetIdx;
+    renderActiveStepPane();
+  } else if (targetIdx >= lessonStepsNodeMapping.length) {
+    showToast("Lesson Completed!");
+    go("s-teacher-home");
+  }
+}
+
+// 5. REGIONAL DATA INJECTION INTO LESSON CONTENT
+function injectRegionalPersonalizationInsideLessonPlanData(htmlText) {
+  var pincode = document.getElementById("reg-pincode-input") ? document.getElementById("reg-pincode-input").value.trim() : "411001";
+  var config = LOCALIZATION_CONFIG_DB[pincode] || LOCALIZATION_CONFIG_DB["411001"];
+  
+  var replaced = htmlText
+    .replace(/Maharashtra/g, config.state)
+    .replace(/Pune/g, config.city)
+    .replace(/Warli Art/g, config.art)
+    .replace(/Puran Poli/g, config.food)
+    .replace(/Ajanta Caves/g, config.monument)
+    .replace(/Sugarcane/g, config.crop);
+    
+  return replaced;
+}
+
+// 6. LANGUAGE INTERCEPT FOR YOUTUBE VIDEOS
+var originalRenderMultimedia = typeof renderMultimedia !== 'undefined' ? renderMultimedia : null;
+function getLanguageFilteredYouTubeVideoUrl(actId, selectedLang) {
+  var fallback = "https://www.youtube.com/embed/dQw4w9WgXcQ";
+  var matrix = {
+    "a-3-reading-recipes": { "Marathi": "https://www.youtube.com/embed/Video_Marathi_Recipes", "Hindi": "https://www.youtube.com/embed/Video_Hindi_Recipes" }
+  };
+  return (matrix[actId] && matrix[actId][selectedLang]) ? matrix[actId][selectedLang] : fallback;
+}
+
+// 7. INTERCEPT MAIN LESSON IGNITION FOR LOADER AND STEPS
+var nativeIgniteInteractiveLesson = igniteInteractiveLesson;
+igniteInteractiveLesson = function(topicKey, projId, actId) {
+  showEngagingLoading(function() {
+    nativeIgniteInteractiveLesson(topicKey, projId, actId);
+    var contentArea = document.getElementById("lesson-content");
+    if(contentArea) {
+      var freshHtml = injectRegionalPersonalizationInsideLessonPlanData(contentArea.innerHTML);
+      setupStepBasedLessonNavigation(freshHtml);
+    }
+  });
+};
+
+// Initialize localization on load
+document.addEventListener("DOMContentLoaded", function() {
+  setTimeout(triggerRegistrationLocalization, 300);
+});
+// scripts.js मध्ये शोधून जुन्या go ओव्हरराईड ऐवजी हा कोड टाका:
+var originalGoPointer = go;
+go = function(id) {
+  if (id === "s-splash") {
+    originalGoPointer("s-teacher-home");
+  } else {
+    originalGoPointer(id);
+  }
+};
+
+// ॲप चालू झाल्यावर थेट टीचर डॅशबोर्डवर नेण्यासाठी:
+document.addEventListener("DOMContentLoaded", function() {
+  var splashScreen = document.getElementById("s-splash");
+  if (splashScreen && splashScreen.classList.contains("active")) {
+    go("s-teacher-home");
+  }
+});
+// scripts.js मधील जुने window.fetch इंटरसेप्टर पूर्णपणे काढून त्याजागी हा नवीन कोड लिहा:
+
+var ROTATING_CARDS_MESSAGES = [
+  "🧠 AI is understanding your topic... Reading NCERT, Analyzing Learning Outcomes, Building Activities.",
+  "🎯 Creating Personalized Lesson... Matching State parameters, Class Size, Resources, and Internet Availability.",
+  "📚 Finding Best Resources... Searching Videos, Worksheets, PPT, Images, and Assessments.",
+  "🤖 AI is Building Lesson... Constructing Teacher Script, Activities, Reflection blocks, and Quizzes."
+];
+
+var AI_TIPS_CAROUSEL_DATA = [
+  "💡 Tip: Use local vegetables for examples.",
+  "💡 Tip: Group students by mixed abilities.",
+  "💡 Tip: Encourage peer learning.",
+  "💡 Tip: Ask reflection questions after activity."
+];
+
+var TIMELINE_MOTIVATIONAL_QUOTES = [
+  "\"Every lesson shapes a future.\"",
+  "\"Learning becomes meaningful through activities.\"",
+  "\"Teachers inspire tomorrow.\""
+];
+
+var GAME_EMOJIS_POOL = [
+  { item: "Lemon", symbol: "🍋" }, { item: "Spoon", symbol: "🥄" },
+  { item: "Recipe", symbol: "📖" }, { item: "Bowl", symbol: "🥣" }
+];
+
+var GAME_QUIZ_POOL = [
+  { q: "Which comes first?", options: ["Add Ice", "Mix Sugar", "Squeeze Lemon"], correct: 1 },
+  { q: "Recipes should always be followed in order.", options: ["TRUE", "FALSE"], correct: 0 }
+];
+
+var GAME_UNSCRAMBLE_POOL = [
+  { scrambled: "M O N E L", clear: "LEMON" }
+];
+
+var activeGameState = { type: 1, dataRef: null, matchSelected: null };
+
+function initializeLoadingParticleBackground() {
+  var container = document.getElementById("ks-loading-particle-container");
+  if (!container) return;
+  container.innerHTML = "";
+  var GLYPHS = ["📚", "✨", "✏️", "💡", "🎓"];
+  for (var i = 0; i < 15; i++) {
+    var p = document.createElement("div");
+    p.className = "ks-floating-particle-node";
+    p.textContent = GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+    p.style.left = Math.random() * 100 + "%";
+    p.style.animationDelay = (Math.random() * 4) + "s";
+    p.style.fontSize = (Math.random() * 10 + 14) + "px";
+    container.appendChild(p);
+  }
+}
+
+function renderRandomLoadingMicroGame() {
+  var playground = document.getElementById("ks-minigame-playground-node");
+  if (!playground) return;
+  playground.innerHTML = "";
+  
+  var mode = Math.floor(Math.random() * 3) + 1;
+  activeGameState.type = mode;
+  
+  if (mode === 1) {
+    playground.innerHTML = `<div class="ks-match-playground" id="ks-match-grid-node"></div>`;
+    var grid = document.getElementById("ks-match-grid-node");
+    var leftCol = document.createElement("div"); leftCol.style = "display:flex; flex-direction:column; gap:4px;";
+    var rightCol = document.createElement("div"); rightCol.style = "display:flex; flex-direction:column; gap:4px;";
+    
+    var shuffledLeft = [...GAME_EMOJIS_POOL].sort(() => Math.random() - 0.5);
+    var shuffledRight = [...GAME_EMOJIS_POOL].sort(() => Math.random() - 0.5);
+    
+    shuffledLeft.forEach((item, idx) => {
+      leftCol.innerHTML += `<button class="ks-match-btn-item" id="ks-mL-${idx}" onclick="handleMiniGameMatch('left', ${idx}, '${item.item}')">${item.item}</button>`;
+    });
+    shuffledRight.forEach((item, idx) => {
+      rightCol.innerHTML += `<button class="ks-match-btn-item" id="ks-mR-${idx}" onclick="handleMiniGameMatch('right', ${idx}, '${item.item}')">${item.symbol}</button>`;
+    });
+    grid.appendChild(leftCol); grid.appendChild(rightCol);
+    activeGameState.matchSelected = { left: null, right: null };
+  } else if (mode === 2) {
+    var quiz = GAME_QUIZ_POOL[Math.floor(Math.random() * GAME_QUIZ_POOL.length)];
+    activeGameState.dataRef = quiz;
+    var html = `<div style="font-size:12px; font-weight:800; color:var(--text); margin-bottom:6px;">${quiz.q}</div><div class="ks-quiz-option-container">`;
+    quiz.options.forEach((opt, idx) => {
+      html += `<button class="ks-quiz-option-row" id="ks-qopt-${idx}" onclick="evaluateMiniGameQuiz(${idx})">${opt}</button>`;
+    });
+    html += `</div>`;
+    playground.innerHTML = html;
+  } else {
+    var unscramble = GAME_UNSCRAMBLE_POOL[0];
+    activeGameState.dataRef = unscramble;
+    playground.innerHTML = `
+      <div style="font-size:11px; font-weight:700; color:var(--text-muted);">Unscramble: <strong style="color:var(--lavender-dark); letter-spacing:2px;">${unscramble.scrambled}</strong></div>
+      <div class="ks-unscramble-input-row" style="margin-top:6px;">
+        <input type="text" class="ks-unscramble-textbox" id="ks-scramble-input" placeholder="Answer...">
+        <button class="adv-add-btn" onclick="evaluateMiniGameUnscramble()" style="padding:6px 12px; font-size:11px;">Go</button>
+      </div>
+    `;
+  }
+}
+
+function handleMiniGameMatch(side, idx, val) {
+  var sel = activeGameState.matchSelected;
+  if (sel[side] !== null) document.getElementById("ks-m" + (side==='left'?'L':'R') + "-" + sel[side].idx).classList.remove("selected-node");
+  sel[side] = { idx: idx, val: val };
+  document.getElementById("ks-m" + (side==='left'?'L':'R') + "-" + idx).classList.add("selected-node");
+  
+  if (sel.left !== null && sel.right !== null) {
+    if (sel.left.val === sel.right.val) {
+      document.getElementById("ks-mL-" + sel.left.idx).className = "ks-match-btn-item matched-node";
+      document.getElementById("ks-mR-" + sel.right.idx).className = "ks-match-btn-item matched-node";
+      awardXP(2); showToast("+2 XP Unlocked!");
+      setTimeout(renderRandomLoadingMicroGame, 1000);
+    } else {
+      document.getElementById("ks-mL-" + sel.left.idx).classList.remove("selected-node");
+      document.getElementById("ks-mR-" + sel.right.idx).classList.remove("selected-node");
+      sel.left = null; sel.right = null;
+    }
+  }
+}
+
+function evaluateMiniGameQuiz(idx) {
+  var quiz = activeGameState.dataRef;
+  document.querySelectorAll("[id^='ks-qopt-']").forEach(el => el.style.pointerEvents = "none");
+  if (idx === quiz.correct) {
+    document.getElementById("ks-qopt-" + idx).classList.add("correct-node");
+    awardXP(2); showToast("+2 XP! Lesson Explorer Badge");
+  } else {
+    document.getElementById("ks-qopt-" + idx).classList.add("wrong-node");
+    document.getElementById("ks-qopt-" + quiz.correct).classList.add("correct-node");
+  }
+  setTimeout(renderRandomLoadingMicroGame, 1500);
+}
+
+function evaluateMiniGameUnscramble() {
+  var val = document.getElementById("ks-scramble-input").value.trim().toUpperCase();
+  if (val === activeGameState.dataRef.clear) {
+    awardXP(2); showToast("+2 XP! Solved");
+    setTimeout(renderRandomLoadingMicroGame, 1000);
+  } else {
+    showToast("Incorrect, try again!");
+  }
+}
+
+function executeSuccessConfettiBurst() {
+  var overlay = document.getElementById("engaging-loading-overlay");
+  if (!overlay) return;
+  var COLORS = ["#6bbf8e", "#f4a47a", "#f5c94e", "#9b8ad6", "#5cb3d8"];
+  for (var i = 0; i < 30; i++) {
+    var c = document.createElement("div");
+    c.className = "ks-confetti-piece-node";
+    c.style.backgroundColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+    c.style.left = Math.random() * 80 + 10 + "%";
+    c.style.top = Math.random() * 30 + 20 + "%";
+    c.style.animationDelay = (Math.random() * 0.4) + "s";
+    overlay.appendChild(c);
+  }
+}
+
+var nativeFetch = window.fetch;
+window.fetch = async function(url, options) {
+  if (url && url.includes("anthropic.com")) {
+    var loader = document.getElementById("engaging-loading-overlay");
+    if (loader) {
+      loader.style.display = "flex";
+      initializeLoadingParticleBackground();
+      renderRandomLoadingMicroGame();
+      
+      var pct = 0;
+      var remainingSeconds = 6;
+      var timelineIndex = 0;
+      
+      document.querySelectorAll("[id^='tl-node-']").forEach(el => el.className = "ks-timeline-line-item state-todo");
+      document.getElementById("tl-node-0").className = "ks-timeline-line-item state-pending";
+      
+      var progressInterval = setInterval(function() {
+        pct += 4;
+        if (pct > 96) pct = 96;
+        
+        document.getElementById("ks-loading-percentage-node").textContent = pct + "%";
+        document.getElementById("ks-loading-percentage-bar").style.width = pct + "%";
+        
+        var blocks = Math.floor(pct / 10);
+        var asciiStr = "";
+        for (var a = 0; a < 10; a++) asciiStr += (a < blocks) ? "█" : "░";
+        document.getElementById("ks-loading-ascii-bar").textContent = asciiStr + " " + pct + "%";
+        
+        if (pct % 20 === 0) {
+          document.getElementById("ks-rotating-card-body").textContent = ROTATING_CARDS_MESSAGES[(pct/20)%ROTATING_CARDS_MESSAGES.length];
+        }
+        if (pct % 24 === 0) {
+          document.getElementById("ks-tips-carousel-text").textContent = AI_TIPS_CAROUSEL_DATA[(pct/24)%AI_TIPS_CAROUSEL_DATA.length];
+        }
+      }, 150);
+
+      var timerInterval = setInterval(function() {
+        remainingSeconds--;
+        if (remainingSeconds < 1) remainingSeconds = 1;
+        document.getElementById("ks-loading-countdown-node").textContent = remainingSeconds + " seconds remaining";
+        
+        if (timelineIndex < 5) {
+          document.getElementById("tl-node-" + timelineIndex).className = "ks-timeline-line-item state-done";
+          document.getElementById("tl-node-" + timelineIndex).querySelector("span").textContent = "✓";
+          timelineIndex++;
+          document.getElementById("tl-node-" + timelineIndex).className = "ks-timeline-line-item state-pending";
+        }
+      }, 1000);
+    }
+
+    try {
+      var res = await nativeFetch(url, options);
+      clearInterval(progressInterval);
+      clearInterval(timerInterval);
+      
+      document.getElementById("ks-loading-percentage-node").textContent = "100%";
+      document.getElementById("ks-loading-percentage-bar").style.width = "100%";
+      document.getElementById("ks-loading-ascii-bar").textContent = "██████████ 100%";
+      document.getElementById("tl-node-5").className = "ks-timeline-line-item state-done";
+      document.getElementById("tl-node-5").querySelector("span").textContent = "✓";
+      
+      document.getElementById("loading-main-heading").textContent = "✅ Lesson Ready!";
+      document.getElementById("ks-loading-countdown-node").textContent = "AI generated successfully.";
+      executeSuccessConfettiBurst();
+      
+      await new Promise(r => setTimeout(r, 1200));
+      if (loader) {
+        loader.style.display = "none";
+        document.querySelectorAll(".ks-confetti-piece-node").forEach(e => e.remove());
+      }
+      return res;
+    } catch (e) {
+      clearInterval(progressInterval);
+      clearInterval(timerInterval);
+      if (loader) loader.style.display = "none";
+      throw e;
+    }
+  }
+  return nativeFetch(url, options);
+};
+/* ═══════════════════════════════════════════════════════════════════
+   KAUSHAL SAATHI — INCREMENTAL UPDATES v3.1
+   ① PIN Code in AI Lesson Customization (s-activity-customize)
+   ② Working AI Loader (showAILoader replacing broken showEngagingLoading)
+   ③ Interactive mini-game rotation every 2.5 s during loading
+   ④ 7-step timeline support + success animation for all nodes
+   ⑤ Null-safe triggerRegistrationLocalization (removes broken refs)
+   ⑥ applyAdvancedOptions + toggleResource + addTool for s-advanced
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────
+   ① PIN CODE — customizeState + state.advancedOptions extensions
+   ───────────────────────────────────────────────────────────────── */
+
+// Extend without overwriting existing fields
+if (typeof customizeState !== 'undefined') {
+  customizeState.pincode = customizeState.pincode || '';
+}
+if (state && state.advancedOptions) {
+  state.advancedOptions.pincode = state.advancedOptions.pincode || '';
+}
+
+/** Auto-fill city / state when a known 6-digit pincode is typed in the
+ *  Customize screen. Uses the existing PINCODE_GEO_REGISTRY table. */
+function custAutoFillFromPincode(val) {
+  var rec = (typeof PINCODE_GEO_REGISTRY !== 'undefined') && PINCODE_GEO_REGISTRY[val];
+  if (!rec) return;
+  customizeState.city = rec.city;
+  customizeState.state = rec.state;
+  var cityEl = document.getElementById('cust-city');
+  var stateEl = document.getElementById('cust-state');
+  if (cityEl) cityEl.value = rec.city;
+  if (stateEl) stateEl.value = rec.state;
+  if (typeof showToast === 'function') showToast('📍 ' + rec.city + ', ' + rec.state + ' detected');
+}
+
+/* Wrap renderCustomizeBody to inject PIN Code field below City / District */
+var _orig_renderCustomizeBody = renderCustomizeBody;
+renderCustomizeBody = function() {
+  _orig_renderCustomizeBody();
+  if (document.getElementById('cust-pincode')) return; // guard: already injected
+  var cityEl = document.getElementById('cust-city');
+  if (!cityEl) return;
+  // Climb to the .adv-row that contains the city field
+  var advRow = cityEl.closest ? cityEl.closest('.adv-row') : (cityEl.parentElement && cityEl.parentElement.parentElement);
+  if (!advRow) return;
+  var pincodeDiv = document.createElement('div');
+  pincodeDiv.className = 'adv-field';
+  pincodeDiv.style.cssText = 'margin-top:10px;';
+  pincodeDiv.innerHTML =
+    '<label class="adv-label">' +
+      '<i class="ti ti-hash" style="font-size:11px;"></i> PIN Code / ZIP Code ' +
+      '<span style="font-weight:500;opacity:.7;">(optional)</span>' +
+    '</label>' +
+    '<input class="adv-input" type="text" id="cust-pincode"' +
+      ' placeholder="e.g. 411001" maxlength="6" inputmode="numeric"' +
+      ' value="' + (customizeState.pincode || '') + '"' +
+      ' oninput="' +
+        "this.value=this.value.replace(/[^0-9]/g,'');" +
+        'customizeState.pincode=this.value;' +
+        "if(this.value.length===6)custAutoFillFromPincode(this.value);" +
+      '">';
+  // Insert the new field immediately after the state/city row
+  advRow.insertAdjacentElement('afterend', pincodeDiv);
+};
+
+/* Wrap custGenerateLessonPlan to flush pincode into advancedOptions */
+var _orig_custGenerateLessonPlan = custGenerateLessonPlan;
+custGenerateLessonPlan = function() {
+  var pEl = document.getElementById('cust-pincode');
+  if (pEl) {
+    var cleaned = pEl.value.replace(/[^0-9]/g, '');
+    customizeState.pincode = cleaned;
+    if (state && state.advancedOptions) state.advancedOptions.pincode = cleaned;
+  }
+  _orig_custGenerateLessonPlan();
+};
+
+/* Wrap openActivityWithCustomize to pull existing pincode into customizeState */
+var _orig_openActivityWithCustomize = openActivityWithCustomize;
+openActivityWithCustomize = function(topicKey, projId, actId) {
+  _orig_openActivityWithCustomize(topicKey, projId, actId);
+  customizeState.pincode = (state && state.advancedOptions && state.advancedOptions.pincode) || '';
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   ② WORKING AI LOADER — showAILoader()
+   Replaces the broken showEngagingLoading (which referenced
+   non-existent DOM ids engaging-humorous-msg / loading-progress-bar-node).
+   Uses the correct ids from the existing engaging-loading-overlay.
+   ───────────────────────────────────────────────────────────────── */
+
+function showAILoader(callback) {
+  var overlay = document.getElementById('engaging-loading-overlay');
+  if (!overlay) { if (callback) callback(); return; }
+
+  // Show the overlay
+  overlay.style.display = 'flex';
+  if (typeof initializeLoadingParticleBackground === 'function') initializeLoadingParticleBackground();
+  if (typeof renderRandomLoadingMicroGame === 'function') renderRandomLoadingMicroGame();
+
+  // Element refs (all guarded)
+  var headingNode    = document.getElementById('loading-main-heading');
+  var countdownNode  = document.getElementById('ks-loading-countdown-node');
+  var pctNode        = document.getElementById('ks-loading-percentage-node');
+  var pctBar         = document.getElementById('ks-loading-percentage-bar');
+  var asciiBar       = document.getElementById('ks-loading-ascii-bar');
+  var rotatingCard   = document.getElementById('ks-rotating-card-body');
+  var tipsText       = document.getElementById('ks-tips-carousel-text');
+
+  // Reset display
+  if (headingNode)   headingNode.textContent   = 'Kaushal Saathi Engine';
+  if (pctNode)       pctNode.textContent       = '0%';
+  if (pctBar)        pctBar.style.width        = '0%';
+  if (asciiBar)      asciiBar.textContent      = '░░░░░░░░░░ 0%';
+  if (countdownNode) countdownNode.textContent = 'Preparing lesson…';
+
+  // Reset all timeline nodes
+  var totalNodes = document.querySelectorAll("[id^='tl-node-']").length;
+  for (var n = 0; n < totalNodes; n++) {
+    var tn = document.getElementById('tl-node-' + n);
+    if (!tn) continue;
+    tn.className = 'ks-timeline-line-item ' + (n === 0 ? 'state-pending' : 'state-todo');
+    var sp = tn.querySelector('span');
+    if (sp) sp.textContent = n === 0 ? '●' : '○';
+  }
+
+  /* Animation config: ~3.8 s to reach 95 %, callback fires then overlay hides. */
+  var DURATION_MS  = 3800;
+  var TICK_MS      = 180;
+  var INC          = 95 / (DURATION_MS / TICK_MS); // ~4.5 % per tick
+  var pct          = 0;
+  var tlIdx        = 0;
+
+  // ③ Rotate mini-game every 2.5 s
+  var gameTimer = setInterval(function() {
+    if (typeof renderRandomLoadingMicroGame === 'function') renderRandomLoadingMicroGame();
+  }, 2500);
+
+  var progressTimer = setInterval(function() {
+    pct = Math.min(pct + INC, 95);
+    var r = Math.round(pct);
+
+    if (pctNode)  pctNode.textContent = r + '%';
+    if (pctBar)   pctBar.style.width  = r + '%';
+    if (asciiBar) {
+      var filled = Math.floor(r / 10), bar = '';
+      for (var i = 0; i < 10; i++) bar += i < filled ? '█' : '░';
+      asciiBar.textContent = bar + ' ' + r + '%';
+    }
+
+    // Rotate informational cards
+    if (rotatingCard && r % 25 === 0 && typeof ROTATING_CARDS_MESSAGES !== 'undefined') {
+      rotatingCard.textContent = ROTATING_CARDS_MESSAGES[Math.floor(r / 25) % ROTATING_CARDS_MESSAGES.length];
+    }
+    if (tipsText && r % 20 === 0 && typeof AI_TIPS_CAROUSEL_DATA !== 'undefined') {
+      tipsText.textContent = AI_TIPS_CAROUSEL_DATA[Math.floor(r / 20) % AI_TIPS_CAROUSEL_DATA.length];
+    }
+
+    // Advance timeline proportionally
+    var maxTl = totalNodes - 2; // keep last node for final "done"
+    var targetTl = Math.min(Math.floor(r / (95 / Math.max(maxTl, 1))), maxTl);
+    while (tlIdx < targetTl) {
+      var doneEl = document.getElementById('tl-node-' + tlIdx);
+      if (doneEl) {
+        doneEl.className = 'ks-timeline-line-item state-done';
+        var ds = doneEl.querySelector('span'); if (ds) ds.textContent = '✓';
+      }
+      tlIdx++;
+      var pendEl = document.getElementById('tl-node-' + tlIdx);
+      if (pendEl) {
+        pendEl.className = 'ks-timeline-line-item state-pending';
+        var ps = pendEl.querySelector('span'); if (ps) ps.textContent = '●';
+      }
+    }
+
+    var secsLeft = Math.max(Math.round(((95 - pct) / 95) * DURATION_MS / 1000), 1);
+    if (countdownNode) countdownNode.textContent = secsLeft + ' seconds remaining';
+
+  }, TICK_MS);
+
+  /* ④ After DURATION_MS: fire callback, show success, confetti, auto-close */
+  setTimeout(function() {
+    clearInterval(progressTimer);
+    clearInterval(gameTimer);
+
+    // Execute lesson generation
+    if (callback) { try { callback(); } catch (e) { console.warn('AI Loader callback:', e); } }
+
+    // Finalize progress bar
+    if (pctNode)  pctNode.textContent = '100%';
+    if (pctBar)   pctBar.style.width  = '100%';
+    if (asciiBar) asciiBar.textContent = '██████████ 100%';
+
+    // Mark every timeline node done (covers 7-node config for fetch intercept too)
+    document.querySelectorAll("[id^='tl-node-']").forEach(function(el) {
+      el.className = 'ks-timeline-line-item state-done';
+      var s = el.querySelector('span'); if (s) s.textContent = '✓';
+    });
+
+    // ④ Success animation
+    if (headingNode)   headingNode.textContent   = '✅ Lesson Ready!';
+    if (countdownNode) countdownNode.textContent = 'AI generated successfully.';
+    if (typeof executeSuccessConfettiBurst === 'function') executeSuccessConfettiBurst();
+
+    // Auto-close after 1.2 s (lesson already rendered behind overlay)
+    setTimeout(function() {
+      overlay.style.display = 'none';
+      document.querySelectorAll('.ks-confetti-piece-node').forEach(function(e) { e.remove(); });
+    }, 1200);
+
+  }, DURATION_MS);
+}
+
+/** Manually hide the AI loader overlay (rarely needed — showAILoader auto-hides
+ *  itself after the success animation, but exposed here for completeness /
+ *  for any future call site that wants explicit control). */
+function hideAILoader() {
+  var overlay = document.getElementById('engaging-loading-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'none';
+  document.querySelectorAll('.ks-confetti-piece-node').forEach(function(e) { e.remove(); });
+}
+
+/* Replace the broken showEngagingLoading with the working showAILoader */
+showEngagingLoading = showAILoader;
+
+/* ④ Patch executeSuccessConfettiBurst to always mark ALL timeline nodes done
+   (handles both local loader and fetch-intercept paths, including 7th node) */
+var _origConfetti = executeSuccessConfettiBurst;
+executeSuccessConfettiBurst = function() {
+  _origConfetti();
+  document.querySelectorAll("[id^='tl-node-']").forEach(function(el) {
+    el.className = 'ks-timeline-line-item state-done';
+    var sp = el.querySelector('span'); if (sp) sp.textContent = '✓';
+  });
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   ⑤ NULL-SAFE triggerRegistrationLocalization
+   The old version crashed on missing DOM ids (regional-quote-area etc.)
+   which were part of "Today's Personalization Highlights" — a section
+   removed from s-teacher-home HTML. This wrapper adds null guards.
+   ───────────────────────────────────────────────────────────────── */
+triggerRegistrationLocalization = function() {
+  var pincodeNode = document.getElementById('reg-pincode-input');
+  if (!pincodeNode) return;
+  var pincode = pincodeNode.value.trim();
+  var db = (typeof LOCALIZATION_CONFIG_DB !== 'undefined') ? LOCALIZATION_CONFIG_DB : {};
+  var config = db[pincode] || db['411001'] || {};
+  if (!config.state) return;
+
+  // Helper: set textContent/innerHTML only if element exists
+  var safeText = function(id, text) {
+    var el = document.getElementById(id); if (el) el.textContent = text;
+  };
+  var safeHtml = function(id, html) {
+    var el = document.getElementById(id); if (el) el.innerHTML = html;
+  };
+
+  safeText('welcome-regional-greeting', (config.greeting || 'NAMASTE').toUpperCase());
+  safeText('welcome-teacher-name', (config.greeting || 'Namaskar') + ' Triveni! 🙏');
+  safeText('welcome-location-text', 'Welcome from ' + config.city + ', ' + config.state + '.');
+  safeText('loc-landmark', config.landmark || '');
+  safeText('loc-food',     config.food     || '');
+  safeText('loc-festival', config.festival || '');
+
+  /* These elements (regional-quote-area, teaching-tip-area, skill-events-placeholder)
+     were part of "Today's Personalization Highlights" and have been removed from the
+     HTML. The guards below prevent null-reference TypeErrors. */
+  safeHtml('regional-quote-area',    '<strong>Regional Quote:</strong> "' + (config.quote || '') + '"');
+  safeHtml('teaching-tip-area',      '💡 <strong>Teaching Tip:</strong> ' + (config.tip || ''));
+  safeHtml('skill-events-placeholder', '📅 <strong>Nearby Skill Events:</strong> ' + (config.city || '') + ' Vocational Forum 2026');
+
+  var soundToggle = document.getElementById('reg-welcome-sound-toggle');
+  if (soundToggle && soundToggle.checked && config.sound) {
+    var audio = new Audio(config.sound);
+    audio.volume = 0.3;
+    audio.play().catch(function() {});
+  }
+};
+
+/* ─────────────────────────────────────────────────────────────────
+   ⑥ MISSING FUNCTIONS for s-advanced screen
+   These are referenced in existing HTML but were never defined.
+   ───────────────────────────────────────────────────────────────── */
+
+/** Toggle a resource chip in the s-advanced screen */
+function toggleResource(btn) {
+  btn.classList.toggle('selected');
+}
+
+/** Add a tool tag in the s-advanced screen */
+function addTool() {
+  var inp  = document.getElementById('adv-tool-input');
+  var tags = document.getElementById('adv-tools-tags');
+  if (!inp || !inp.value.trim() || !tags) return;
+  var label = inp.value.trim();
+  var tag = document.createElement('span');
+  tag.className = 'tool-tag';
+  tag.innerHTML = label + '<button onclick="this.parentElement.remove()">×</button>';
+  tags.appendChild(tag);
+  inp.value = '';
+}
+
+/** Apply advanced options and regenerate the current lesson plan */
+function applyAdvancedOptions() {
+  var safeVal = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+  var safeChk = function(id) { var el = document.getElementById(id); return el ? el.checked : false; };
+
+  var selectedResources = Array.from(
+    document.querySelectorAll('#adv-resources .adv-resource-chip.selected')
+  ).map(function(b) { return b.textContent.trim().replace(/^[\S]+\s/, ''); });
+
+  var toolTags = Array.from(
+    document.querySelectorAll('#adv-tools-tags .tool-tag')
+  ).map(function(t) { return t.childNodes[0].textContent.trim(); });
+
+  var pincodeEl = document.getElementById('adv-pincode');
+  state.advancedOptions = {
+    periodDuration:      parseInt(safeVal('adv-period')) || 35,
+    classSize:           safeVal('adv-classsize'),
+    state:               safeVal('adv-state'),
+    city:                safeVal('adv-city'),
+    pincode:             pincodeEl ? pincodeEl.value.replace(/[^0-9]/g, '') : '',
+    resources:           selectedResources.length ? selectedResources : ['Chalk & Board'],
+    tools:               toolTags,
+    internet:            safeChk('adv-internet'),
+    subject:             safeVal('adv-subject'),
+    subjectIntegration:  safeVal('adv-integrate'),
+    teachingChallenge:   safeVal('adv-challenge')
+  };
+
+  if (typeof showToast === 'function') showToast('⚙️ Options saved — regenerating plan…');
+
+  // Re-fire lesson with the same topic/project/activity if available
+  var t = state.topic, p = state.project && state.project.id, a = state.activity && state.activity.id;
+  if (t && p && a && typeof igniteInteractiveLesson === 'function') {
+    igniteInteractiveLesson(t, p, a);
+  } else {
+    if (typeof go === 'function') go('s-lesson');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   KAUSHAL SAATHI — HOME PAGE "ALL FEATURES" GRID v1.0
+   The #th-feature-grid container + renderTeacherHome() already existed
+   in this file but the matching <div id="th-feature-grid"> was never
+   added to index.html, so the grid silently never rendered. The HTML
+   container has now been wired in (s-teacher-home). This override only
+   replaces the TH_FEATURES *data* so the grid matches the approved
+   Home page screenshot — renderTeacherHome() itself is untouched.
+   ═══════════════════════════════════════════════════════════════════ */
+TH_FEATURES = [
+  { ico:'📅', bg:'var(--sky)',      name:'Today',              meta:'Aaj ka din - आज की कक्षा',  onclick:"openTodayPlan()" },
+  { ico:'🧩', bg:'var(--mint)',     name:'AI Lesson Plans',    meta:'NCF-aligned, in seconds',   onclick:"go('s-home')" },
+  { ico:'📈', bg:'var(--lavender)', name:'Dashboard',          meta:'Class & personal progress', onclick:"goDashboard()" },
+  { ico:'🧭', bg:'var(--peach)',    name:'Projects',           meta:'Project Navigator',         onclick:"goProjects()" },
+  { ico:'📊', bg:'var(--yellow)',   name:'Assessments',        meta:'Competencies & marks',      onclick:"goAssessments()" },
+  { ico:'📦', bg:'var(--coral)',    name:'Content Repository', meta:'Images, Videos, PDFs',      onclick:"goRepository()" },
+  { ico:'📚', bg:'var(--sky)',      name:'Stories',            meta:'Motivational & skill stories', onclick:"goStories()" },
+  { ico:'📁', bg:'var(--yellow)',   name:'Portfolio',          meta:'Student learning portfolios', onclick:"goPortfolio()" },
+  { ico:'✨', bg:'var(--lavender)', name:'Saathi AI',          meta:'Voice-first companion',     onclick:"openAiChat()" }
+];
+
+/* Re-render now in case DOMContentLoaded already fired before this override
+   (e.g. script re-run / hot reload scenarios) so the grid never shows stale data. */
+if (document.readyState !== 'loading' && typeof renderTeacherHome === 'function') {
+  renderTeacherHome();
+}
